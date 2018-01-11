@@ -1,0 +1,24 @@
+# Gradle
+/.gradle/
+/build/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# IDEA
+.idea
+*.ipr
+*.iml
+*.iws
+
+# NetBeans
+nb-configuration.xml
+
+# KDE
+.directory
+
+# OSX
+.DS_Store

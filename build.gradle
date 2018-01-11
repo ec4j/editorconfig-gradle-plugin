@@ -1,0 +1,78 @@
+group = 'org.ec4j.gradle'
+version = '0.0.1-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.2'
+    compile 'org.ec4j.maven:ec4j-linters:0.0.2'
+    testCompile 'junit:junit:4.12'
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'EditorConfig Gradle Plugin'
+                packaging 'jar'
+                description 'A Gradle plugin for checking whether project files comply with format rules defined in .editorconfig files and eventually also for fixing the violations'
+                url 'https://github.com/ec4j/editorconfig-gradle-plugin'
+
+                scm {
+                    connection 'scm:git:https://github.com/ec4j/editorconfig-gradle-plugin.git'
+                    developerConnection 'scm:git:git@github.com:ec4j/editorconfig-gradle-plugin.git'
+                    url 'https://github.com/ec4j/editorconfig-gradle-plugin'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'ppalaga'
+                        name 'Peter Palaga'
+                    }
+                }
+            }
+        }
+    }
+}
