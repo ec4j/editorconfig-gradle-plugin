@@ -1,9 +1,29 @@
+/**
+ * Copyright (c) 2018 EditorConfig Gradle Plugin
+ * project contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id 'java'
+    id 'maven'
+    id 'signing'
+    id 'com.github.hierynomus.license' version '0.14.0'
+}
+
 group = 'org.ec4j.gradle'
 version = '0.0.1-SNAPSHOT'
-
-apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 
@@ -32,6 +52,38 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives javadocJar, sourcesJar
+}
+
+license {
+    header = rootProject.file('license-header-template.txt')
+    ignoreFailures = false
+    strictCheck true
+    ext.year = '2018'
+    excludes ([
+        "**/*.adoc",
+        "**/.gitkeep",
+        ".mvn/wrapper/",
+        "LICENSE",
+        "gradlew",
+        "gradlew.bat",
+        "license-header-template.txt"
+    ])
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+task licenseFormatSrc(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
+    source = licenseFileTree()
+}
+licenseFormat.dependsOn licenseFormatSrc
+
+task licenseSrc(type: com.hierynomus.gradle.license.tasks.LicenseCheck) {
+    source = licenseFileTree()
+}
+licenseMain.dependsOn licenseSrc
+
+def licenseFileTree() {
+    return fileTree(dir: rootProject.projectDir).include('src/**').include('*')
 }
 
 signing {
