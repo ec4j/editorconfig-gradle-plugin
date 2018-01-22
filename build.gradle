@@ -35,8 +35,8 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ec4j.maven:ec4j-lint-api:0.0.2'
-    compile 'org.ec4j.maven:ec4j-linters:0.0.2'
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.3'
+    compile 'org.ec4j.maven:ec4j-linters:0.0.3'
     testCompile 'junit:junit:4.12'
 }
 
