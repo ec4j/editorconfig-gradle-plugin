@@ -16,10 +16,12 @@
  */
 
 plugins {
+    id 'com.github.hierynomus.license' version '0.14.0'
+    id 'com.gradle.plugin-publish' version '0.9.9'
     id 'java'
+    id 'java-gradle-plugin'
     id 'maven'
     id 'signing'
-    id 'com.github.hierynomus.license' version '0.14.0'
 }
 
 group = 'org.ec4j.gradle'
@@ -35,9 +37,37 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ec4j.maven:ec4j-lint-api:0.0.3'
-    compile 'org.ec4j.maven:ec4j-linters:0.0.3'
+    compile 'org.antlr:antlr4-runtime:4.7'
+    compile 'org.ec4j.core:ec4j-core:0.0.1'
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.5-SNAPSHOT'
+    compile 'org.ec4j.maven:ec4j-linters:0.0.5-SNAPSHOT'
     testCompile 'junit:junit:4.12'
+    testCompile gradleTestKit()
+    testCompile 'org.slf4j:slf4j-api:1.7.25'
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
+}
+
+gradlePlugin {
+  plugins {
+    simplePlugin {
+      id = 'org.ec4j.editorconfig'
+      implementationClass = 'org.ec4j.gradle.EditorconfigGradlePlugin'
+    }
+  }
+}
+
+pluginBundle {
+    website = 'https://github.com/ec4j/editorconfig-gradle-plugin'
+    vcsUrl = 'https://github.com/ec4j/editorconfig-gradle-plugin.git'
+    description = 'A Gradle plugin for checking whether project files comply with format rules defined in .editorconfig files and eventually also for fixing the violations'
+    tags = ['editorconfig', 'lint', 'gradle', 'plugin']
+
+    plugins {
+        wildflyProvisionPlugin {
+            id = 'org.ec4j.editorconfig'
+            displayName = 'EditorConfig Gradle Plugin'
+        }
+    }
 }
 
 task javadocJar(type: Jar) {
@@ -49,6 +79,7 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
+
 
 artifacts {
     archives javadocJar, sourcesJar
@@ -66,7 +97,8 @@ license {
         "LICENSE",
         "gradlew",
         "gradlew.bat",
-        "license-header-template.txt"
+        "license-header-template.txt",
+        "src/test/projects/defaults*/**/*.txt"
     ])
     mapping {
         java = 'SLASHSTAR_STYLE'

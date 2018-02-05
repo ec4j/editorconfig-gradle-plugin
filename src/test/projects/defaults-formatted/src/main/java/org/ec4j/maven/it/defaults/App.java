@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.gradle;
+package org.ec4j.maven.it.defaults;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.TaskAction;
-
-public class CheckTask extends DefaultTask {
-
-    @TaskAction
-    public void check() {
-        System.out.println("--- check");
+/**
+ * Hello world!
+ *
+ */
+public class App {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
     }
 }

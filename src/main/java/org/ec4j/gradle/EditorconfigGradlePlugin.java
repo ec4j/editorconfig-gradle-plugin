@@ -19,11 +19,19 @@ package org.ec4j.gradle;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+/**
+ * Adds {@link EditorconfigExtension}, {@link EditorconfigCheckTask} and {@link EditorconfigFormatTask}.
+ *
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
+ */
 public class EditorconfigGradlePlugin implements Plugin<Project> {
 
+    /** {@inheritDoc} */
     @Override
     public void apply(Project project) {
-        project.getTasks().create("check", CheckTask.class);
+        project.getExtensions().create(EditorconfigExtension.NAME, EditorconfigExtension.class);
+        project.getTasks().create(EditorconfigCheckTask.NAME, EditorconfigCheckTask.class);
+        project.getTasks().create(EditorconfigFormatTask.NAME, EditorconfigFormatTask.class);
     }
 
 }
