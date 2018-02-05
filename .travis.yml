@@ -16,12 +16,28 @@
 #
 
 language: java
+
 # Enable container-based infrastructure
 # see http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
+
 jdk:
 - oraclejdk8
+
+# skip the built-in ./gradlew assemle in install phase
+install: true
+
 script:
-- ./gradlew clean install build
+- ./gradlew clean build --info --no-daemon
+
 after_failure:
 - cat build/test-results/test/binary/results.bin
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/

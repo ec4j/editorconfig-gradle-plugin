@@ -26,6 +26,7 @@ plugins {
 
 group = 'org.ec4j.gradle'
 version = '0.0.1-SNAPSHOT'
+ext.isReleaseVersion = !version.endsWith("-SNAPSHOT")
 
 sourceCompatibility = 1.7
 
@@ -37,10 +38,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.antlr:antlr4-runtime:4.7'
-    compile 'org.ec4j.core:ec4j-core:0.0.1'
-    compile 'org.ec4j.maven:ec4j-lint-api:0.0.5-SNAPSHOT'
-    compile 'org.ec4j.maven:ec4j-linters:0.0.5-SNAPSHOT'
+    compile 'org.ec4j.maven:ec4j-linters:0.0.5'
     testCompile 'junit:junit:4.12'
     testCompile gradleTestKit()
     testCompile 'org.slf4j:slf4j-api:1.7.25'
@@ -119,6 +117,7 @@ def licenseFileTree() {
 }
 
 signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
 
@@ -128,7 +127,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: hasProperty('ossrhUsername') ? ossrhUsername: '', password: hasProperty('ossrhPassword') ? ossrhPassword: '')
             }
 
             pom.project {

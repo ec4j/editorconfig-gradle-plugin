@@ -18,5 +18,9 @@
 
 environment:
   JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+  
+install:
+  - echo skip default install steps
+
 build_script:
-  - gradlew.bat clean install build
+  - gradlew.bat clean build --info --no-daemon
