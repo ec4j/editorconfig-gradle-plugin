@@ -19,37 +19,57 @@ https://github.com/ec4j/editorconfig-gradle-plugin/issues[report] them!
 
 == Basic usage
 
-`editorconfig-gradle-plugin` requires Java 7+ and Gradle 3.0+.
+`editorconfig-gradle-plugin` requires Java 7+ and Gradle 3.5+.
 
-To make the build fail if any of your source files does not comply with `.editorconfig` rules, add the following to your project:
+To apply the plugin, add the following to your project:
 
 [source,gradle]
 ----
-TODO
+plugins {
+    ...
+    id 'org.ec4j.editorconfig'
+}
 ----
+
+After that, you can check whether your source files comply with `.editorconfig` rules:
+
+[source,shell]
+----
+./gradlew editorconfigCheck
+----
+
 
 In case any violations are detected, you may want to fix them automagically by running
 
-[source,xml]
+[source,shell]
 ----
-gradle editorconfig:format
+./gradlew editorconfigFormat
 ----
 
 == Configuration
 
-TODO
+There is `editorconfig` extension object. Its properties are defined in the
+https://github.com/ec4j/editorconfig-gradle-plugin/tree/master/src/main/java/org/ec4j/gradle/EditorconfigExtension.java[EditorconfigExtension]
+class.
+
+[source,gradle]
+----
+editorconfig {
+   ....
+}
+----
 
 == How it works
 
 `editorconfig-gradle-plugin` is using the same libraries as its sibling `editorconfig-maven-plugin`:
-`org.ec4j.maven:ec4j-lint-api` and `org.ec4j.maven:ec4j-linters`. They are designed around the concept of a Linter.
+`org.ec4j.maven:ec4j-lint-api` and `org.ec4j.maven:ec4j-linters`. They are designed around the Linter interface.
 https://github.com/ec4j/editorconfig-maven-plugin/blob/master/ec4j-lint-api/src/main/java/org/ec4j/maven/lint/api/Linter.java[Linter]
 is a processor specialized for some particular file format (such as YAML or XML) for which it can detect whether some
 particular `.editorconfig` properties are satisfied and eventually propose a
 https://github.com/ec4j/editorconfig-maven-plugin/blob/master/ec4j-lint-api/src/main/java/org/ec4j/maven/lint/api/Edit.java[fix] that can
 be applied automatically.
 
-.Linters available in `editorconfig-gradle-plugin`
+.Linters available by default:
 |===
 |Class name |Default includes|Default excludes |Supported `.editorconfig` properties
 
