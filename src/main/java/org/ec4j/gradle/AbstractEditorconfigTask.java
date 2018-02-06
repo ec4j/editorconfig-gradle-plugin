@@ -113,7 +113,7 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
      * @param absFile
      *            the {@link Path} to create a {@link Resource} for. Must be absolute.
      * @param relFile
-     *            the {@link Path} to create a {@link Resource} for. Must be relative to {@link #basedirPath}.
+     *            the {@link Path} to create a {@link Resource} for. Must be relative to {@code project.getProjectDir()}.
      * @param encoding
      *            the encoding of the resulting {@link Resource}
      * @return a new {@link Resource} or a new {@link EditableResource}
