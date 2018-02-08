@@ -27,7 +27,8 @@ To apply the plugin, add the following to your project:
 ----
 plugins {
     ...
-    id 'org.ec4j.editorconfig'
+    // Check the latest version at https://plugins.gradle.org/plugin/org.ec4j.editorconfig
+    id 'org.ec4j.editorconfig' version '...'
 }
 ----
 
