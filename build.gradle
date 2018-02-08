@@ -61,7 +61,7 @@ pluginBundle {
     tags = ['editorconfig', 'lint', 'gradle', 'plugin']
 
     plugins {
-        wildflyProvisionPlugin {
+        editorconfigPlugin {
             id = 'org.ec4j.editorconfig'
             displayName = 'EditorConfig Gradle Plugin'
         }
