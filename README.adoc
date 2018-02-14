@@ -61,14 +61,21 @@ check.dependsOn editorconfigCheck
 
 == Configuration
 
-There is `editorconfig` extension object. Its properties are defined in the
+There is `editorconfig` extension object. Its properties are documented in the
 https://github.com/ec4j/editorconfig-gradle-plugin/tree/master/src/main/java/org/ec4j/gradle/EditorconfigExtension.java[EditorconfigExtension]
 class.
 
 [source,gradle]
 ----
 editorconfig {
-   ....
+
+   # All files are included by default. Paths or patterns must be relative to the the project root directory.
+   includes = ['src/**', 'build.gradle']
+
+   # Exlude some files in addition to the default excludes
+   # Paths or patterns must be relative to the the project root directory.
+   excludes = ['derby.log', 'LICENSE']
+
 }
 ----
 
