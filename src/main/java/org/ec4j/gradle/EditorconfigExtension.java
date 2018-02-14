@@ -174,4 +174,48 @@ public class EditorconfigExtension {
     public boolean isFailOnNoMatchingProperties() {
         return failOnNoMatchingProperties;
     }
+
+    public void setAddLintersFromClassPath(boolean addLintersFromClassPath) {
+        this.addLintersFromClassPath = addLintersFromClassPath;
+    }
+
+    public void setBackup(boolean backup) {
+        this.backup = backup;
+    }
+
+    public void setBackupSuffix(String backupSuffix) {
+        this.backupSuffix = backupSuffix;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setExcludeNonSourceFiles(boolean excludeNonSourceFiles) {
+        this.excludeNonSourceFiles = excludeNonSourceFiles;
+    }
+
+    public void setExcludes(List<String> excludes) {
+        this.excludes = excludes;
+    }
+
+    public void setExcludeSubmodules(boolean excludeSubmodules) {
+        this.excludeSubmodules = excludeSubmodules;
+    }
+
+    public void setFailOnFormatViolation(boolean failOnFormatViolation) {
+        this.failOnFormatViolation = failOnFormatViolation;
+    }
+
+    public void setFailOnNoMatchingProperties(boolean failOnNoMatchingProperties) {
+        this.failOnNoMatchingProperties = failOnNoMatchingProperties;
+    }
+
+    public void setIncludes(List<String> includes) {
+        this.includes = includes;
+    }
+
+    public void setLinters(List<LinterConfig> linters) {
+        this.linters = linters;
+    }
 }

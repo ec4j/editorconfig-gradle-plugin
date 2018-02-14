@@ -96,7 +96,7 @@ license {
         "gradlew",
         "gradlew.bat",
         "license-header-template.txt",
-        "src/test/projects/defaults*/**/*.txt"
+        "src/test/projects/**/*.txt"
     ])
     mapping {
         java = 'SLASHSTAR_STYLE'
