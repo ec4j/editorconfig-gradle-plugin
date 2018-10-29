@@ -38,7 +38,8 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ec4j.maven:ec4j-linters:0.0.5'
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.7' // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
+
     testCompile 'junit:junit:4.12'
     testCompile gradleTestKit()
     testCompile 'org.slf4j:slf4j-api:1.7.25'
@@ -68,6 +69,13 @@ pluginBundle {
     }
 }
 
+test {
+    testLogging.showStandardStreams = true
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
@@ -90,7 +98,9 @@ license {
     ext.year = '2018'
     excludes ([
         "**/*.adoc",
+        "**/.classpath",
         "**/.gitkeep",
+        "**/.project",
         ".mvn/wrapper/",
         "LICENSE",
         "gradlew",
@@ -99,6 +109,7 @@ license {
         "src/test/projects/**/*.txt"
     ])
     mapping {
+        editorconfig = 'SCRIPT_STYLE'
         java = 'SLASHSTAR_STYLE'
     }
 }

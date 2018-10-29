@@ -16,12 +16,9 @@
  */
 package org.ec4j.gradle;
 
-import java.nio.charset.Charset;
-import java.nio.file.Path;
+import javax.inject.Inject;
 
-import org.ec4j.maven.lint.api.Resource;
-import org.ec4j.maven.lint.api.ViolationCollector;
-import org.ec4j.maven.lint.api.ViolationHandler;
+import org.gradle.workers.WorkerExecutor;
 
 /**
  * Checks whether files are formatted according to rules defined in {@code .editorconfig} files. If fomat violations are
@@ -35,16 +32,9 @@ public class EditorconfigCheckTask extends AbstractEditorconfigTask {
 
     public static final String NAME = "editorconfigCheck";
 
-    /** {@inheritDoc} */
-    @Override
-    protected ViolationHandler createHandler() {
-        return new ViolationCollector(editorconfigExtension.isFailOnFormatViolation(), "./gradlew editorconfigFormat");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected Resource createResource(Path absFile, Path relFile, Charset encoding) {
-        return new Resource(absFile, relFile, encoding);
+    @Inject
+    public EditorconfigCheckTask(WorkerExecutor workerExecutor) {
+        super(workerExecutor);
     }
 
 }

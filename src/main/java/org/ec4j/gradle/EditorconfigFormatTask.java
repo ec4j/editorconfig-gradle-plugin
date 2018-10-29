@@ -16,13 +16,9 @@
  */
 package org.ec4j.gradle;
 
-import java.nio.charset.Charset;
-import java.nio.file.Path;
+import javax.inject.Inject;
 
-import org.ec4j.maven.lint.api.EditableResource;
-import org.ec4j.maven.lint.api.FormattingHandler;
-import org.ec4j.maven.lint.api.Resource;
-import org.ec4j.maven.lint.api.ViolationHandler;
+import org.gradle.workers.WorkerExecutor;
 
 /**
  * Formats a set of files so that they comply with rules defined in {@code .editorconfig} files.
@@ -33,15 +29,9 @@ import org.ec4j.maven.lint.api.ViolationHandler;
 public class EditorconfigFormatTask extends AbstractEditorconfigTask {
     public static final String NAME = "editorconfigFormat";
 
-    /** {@inheritDoc} */
-    @Override
-    protected ViolationHandler createHandler() {
-        return new FormattingHandler(editorconfigExtension.isBackup(), editorconfigExtension.getBackupSuffix());
+    @Inject
+    public EditorconfigFormatTask(WorkerExecutor workerExecutor) {
+        super(workerExecutor);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected Resource createResource(Path absFile, Path relFile, Charset encoding) {
-        return new EditableResource(absFile, relFile, encoding);
-    }
 }

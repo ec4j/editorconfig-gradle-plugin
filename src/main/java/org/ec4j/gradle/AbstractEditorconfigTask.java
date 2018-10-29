@@ -17,33 +17,28 @@
 package org.ec4j.gradle;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import org.ec4j.core.Cache.Caches;
-import org.ec4j.core.Resource.Resources;
-import org.ec4j.core.ResourceProperties;
-import org.ec4j.core.ResourcePropertiesService;
-import org.ec4j.core.model.PropertyType;
+import org.ec4j.gradle.CollectingLogger.LogMessages;
+import org.ec4j.gradle.runtime.EditorconfigInvoker;
 import org.ec4j.maven.lint.api.Constants;
-import org.ec4j.maven.lint.api.EditableResource;
-import org.ec4j.maven.lint.api.FormatException;
-import org.ec4j.maven.lint.api.Linter;
-import org.ec4j.maven.lint.api.LinterRegistry;
-import org.ec4j.maven.lint.api.Resource;
-import org.ec4j.maven.lint.api.ViolationHandler;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.IsolationMode;
+import org.gradle.workers.WorkerConfiguration;
+import org.gradle.workers.WorkerExecutionException;
+import org.gradle.workers.WorkerExecutor;
 
 /**
  * A base for {@link EditorconfigCheckTask} and {@link EditorconfigFormatTask}.
@@ -52,41 +47,16 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class AbstractEditorconfigTask extends DefaultTask {
 
-    private static LinterRegistry buildLinterRegistry(EditorconfigExtension ext) {
-
-        final LinterRegistry.Builder linterRegistryBuilder = LinterRegistry.builder();
-
-        final ClassLoader cl = ext.getClass().getClassLoader();
-        if (ext.isAddLintersFromClassPath()) {
-            linterRegistryBuilder.scan(cl);
-        }
-
-        final List<LinterConfig> linters = ext.getLinters();
-        if (linters != null && !linters.isEmpty()) {
-            for (LinterConfig linter : linters) {
-                if (linter.isEnabled()) {
-                    linterRegistryBuilder.entry(linter.getId(), linter.getClassName(), cl, linter.getIncludes(),
-                            linter.getExcludes(), linter.isUseDefaultIncludesAndExcludes());
-                } else {
-                    linterRegistryBuilder.removeEntry(linter.getId());
-                }
-            }
-        }
-
-        return linterRegistryBuilder.build();
-
-    }
+    private final WorkerExecutor workerExecutor;
 
     /**
      * {@link FileTree} scanning boilerplate.
      *
-     * @param project
-     *            the project being built
-     * @param editorconfigExtension
-     *            the config, cannot be null
-     * @return a {@link Set} of included files
+     * @param project the project being built
+     * @param editorconfigExtension the config, cannot be null
+     * @return a {@link Set} of absolute paths of included files
      */
-    private static Set<File> scanIncludedFiles(Project project, final EditorconfigExtension editorconfigExtension) {
+    private static Set<String> scanIncludedFiles(Project project, final EditorconfigExtension editorconfigExtension) {
         FileTree tree = project.fileTree(project.getProjectDir(), new Action<ConfigurableFileTree>() {
             @Override
             public void execute(ConfigurableFileTree tree) {
@@ -99,26 +69,20 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
                 tree.exclude(excls);
             }
         });
-        return tree.getFiles();
+        final Set<String> result = new LinkedHashSet<>();
+        for (File file : tree.getFiles()) {
+            result.add(file.getAbsolutePath());
+        }
+        return result;
     }
 
-    /** Rhe {@link EditorconfigExtension} initialized in {@link #perform()} */
+    /** The {@link EditorconfigExtension} initialized in {@link #perform()} */
     protected EditorconfigExtension editorconfigExtension;
 
-    protected abstract ViolationHandler createHandler();
-
-    /**
-     * Create a new {@link Resource} suitable for the current task.
-     *
-     * @param absFile
-     *            the {@link Path} to create a {@link Resource} for. Must be absolute.
-     * @param relFile
-     *            the {@link Path} to create a {@link Resource} for. Must be relative to {@code project.getProjectDir()}.
-     * @param encoding
-     *            the encoding of the resulting {@link Resource}
-     * @return a new {@link Resource} or a new {@link EditableResource}
-     */
-    protected abstract Resource createResource(Path absFile, Path relFile, Charset encoding);
+    protected AbstractEditorconfigTask(WorkerExecutor workerExecutor) {
+        super();
+        this.workerExecutor = workerExecutor;
+    }
 
     /**
      * Performs this task.
@@ -141,56 +105,67 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
         } else {
             charset = Charset.forName(editorconfigExtension.getEncoding());
         }
-        final Path basedirPath = project.getProjectDir().toPath();
+        final String basedirPath = project.getProjectDir().toPath().toString();
 
-        LinterRegistry linterRegistry = buildLinterRegistry(editorconfigExtension);
-        final Set<File> includedFiles = scanIncludedFiles(project, editorconfigExtension);
+        final Set<String> includedPaths = scanIncludedFiles(project, editorconfigExtension);
+
+        final Configuration classpath = project.getConfigurations().getAt(EditorconfigGradlePlugin.CONFIGURATTION_NAME);
+
+        workerExecutor.submit(EditorconfigInvoker.class, new Action<WorkerConfiguration>() {
+            @Override
+            public void execute(WorkerConfiguration config) {
+                config.setIsolationMode(IsolationMode.CLASSLOADER);
+                config.params(AbstractEditorconfigTask.this.getClass().getName(), includedPaths, basedirPath,
+                        charset.name(), editorconfigExtension.isFailOnFormatViolation(),
+                        editorconfigExtension.isBackup(), editorconfigExtension.getBackupSuffix(),
+                        editorconfigExtension.isAddLintersFromClassPath(), editorconfigExtension.getLinters(),
+                        editorconfigExtension.isFailOnNoMatchingProperties());
+                config.classpath(classpath);
+            }
+        });
 
         try {
-            final ViolationHandler handler = createHandler();
+            workerExecutor.await();
+        } catch (WorkerExecutionException e) {
 
-            final ResourcePropertiesService resourcePropertiesService = ResourcePropertiesService.builder() //
-                    .cache(Caches.permanent()) //
-                    .build();
-            handler.startFiles();
-            boolean propertyMatched = false;
-            for (File includedFile : includedFiles) {
-                final Path absFile = includedFile.getAbsoluteFile().toPath();
-                final Path file = basedirPath.relativize(absFile);
-                log.debug("Processing file '{}'", file);
-                final ResourceProperties editorConfigProperties = resourcePropertiesService
-                        .queryProperties(Resources.ofPath(absFile, charset));
-                if (!editorConfigProperties.getProperties().isEmpty()) {
-                    propertyMatched = true;
-                    final Charset useEncoding = Charset.forName(editorConfigProperties.getValue(PropertyType.charset,
-                            editorconfigExtension.getEncoding(), true));
-                    final Resource resource = createResource(absFile, file, useEncoding);
-                    final List<Linter> filteredLinters = linterRegistry.filter(file);
-                    ViolationHandler.ReturnState state = ViolationHandler.ReturnState.RECHECK;
-                    while (state != ViolationHandler.ReturnState.FINISHED) {
-                        for (Linter linter : filteredLinters) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Processing file '{}' using linter {}", file, linter.getClass().getName());
-                            }
-                            handler.startFile(resource);
-                            linter.process(resource, editorConfigProperties, handler);
+            /* A megahack to pass data from the classpath-isolated WorkerExecutor.
+             * Found no better way than to use some Exception defined in JDK
+             * and smuggle the data through its message field as a string.
+             * The serialization format is defined in CollectingLogger.
+             * Note that even the log messages need to be passed like that because
+             * loggers instantiated by the isolated class loader do not obey
+             * the log level set via Gradle CLI.
+             * @ppalaga is open for suggestions to improve this :)
+             */
+
+            Throwable t = e;
+            while (t.getCause() != null) {
+                t = t.getCause();
+                if (t instanceof RuntimeException) {
+                    final String msg = t.getMessage();
+                    if (msg != null && msg.startsWith(EditorconfigInvoker.FORMAT_EXCEPTION_PREFIX)) {
+                        final LogMessages logData = CollectingLogger
+                                .deserialize(EditorconfigInvoker.FORMAT_EXCEPTION_PREFIX.length(), msg);
+                        for (Entry<String, String> logMessage : logData.getMessages()) {
+                            final String key = logMessage.getKey();
+                            /* There is no TRACE in org.gradle.api.logging.LogLevel */
+                            final LogLevel logLevel = org.ec4j.maven.lint.api.Logger.LogLevel.TRACE.name().equals(key)
+                                    ? LogLevel.DEBUG
+                                    : LogLevel.valueOf(key);
+                            log.log(logLevel, logMessage.getValue());
                         }
-                        state = handler.endFile();
+                        final String failureMessage = logData.getFailureMessage();
+                        if (failureMessage != null) {
+                            throw new GradleException(failureMessage);
+                        } else {
+                            return;
+                        }
                     }
                 }
             }
-            if (!propertyMatched) {
-                if (editorconfigExtension.isFailOnNoMatchingProperties()) {
-                    log.error("No .editorconfig properties applicable for files under '{}'", basedirPath);
-                } else {
-                    log.warn("No .editorconfig properties applicable for files under '{}'", basedirPath);
-                }
-            }
-            handler.endFiles();
-        } catch (IOException e) {
-            throw new GradleException(e.getMessage(), e);
-        } catch (FormatException e) {
-            throw new GradleException("\n\n" + e.getMessage() + "\n\n", e);
+            throw e;
         }
+
     }
+
 }

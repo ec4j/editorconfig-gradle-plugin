@@ -25,7 +25,10 @@ import java.nio.file.Paths;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
+import org.gradle.testkit.runner.InvalidPluginMetadataException;
+import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.gradle.testkit.runner.UnexpectedBuildSuccess;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,59 +78,66 @@ public class EditorconfigGradlePluginITest {
         final String projectName = "defaults";
         Path testProjectPath = init(projectName, "checkDefaults");
 
-        BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
-                EditorconfigCheckTask.NAME //
-                , "--debug" //
-        // , "--stacktrace" //
-        ) //
-                // .withDebug(true)
-                .withPluginClasspath() //
-                .buildAndFail();
+        try {
+            BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
+                    EditorconfigCheckTask.NAME //
+                    , "--debug" //
+                    , "--stacktrace" //
+            ) //
+                    .withDebug(true)
+                    .withPluginClasspath() //
+                    .buildAndFail();
 
-        final String logText = result.getOutput();
-        Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
+            final String logText = result.getOutput();
+            Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-        Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
+            Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
 
-        assertLogText(projectName, logText,
-                "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText, "No formatting violations found in file '.editorconfig'");
-        assertLogText(projectName, logText,
-                "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText, "No formatting violations found in file 'build.gradle'");
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.XmlLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText,
-                "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText, "Checked 6 files");
-        assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
-        assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
-        assertLogText(projectName, logText, "./gradlew editorconfigFormat");
-        assertLogText(projectName, logText, "to fix them automagically.");
+            assertLogText(projectName, logText,
+                    "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText, "No formatting violations found in file '.editorconfig'");
+            assertLogText(projectName, logText,
+                    "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText, "No formatting violations found in file 'build.gradle'");
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.XmlLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText,
+                    "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText, "Checked 6 files");
+            assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
+            assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
+            assertLogText(projectName, logText, "./gradlew editorconfigFormat");
+            assertLogText(projectName, logText, "to fix them automagically.");
+        } catch (UnexpectedBuildSuccess e) {
+            final BuildResult result = e.getBuildResult();
+            final String logText = result.getOutput();
+            Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
+            throw e;
+        }
 
     }
 
@@ -136,47 +146,55 @@ public class EditorconfigGradlePluginITest {
         final String projectName = "extension";
         final Path testProjectPath = init(projectName, "checkExtension");
 
-        BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
-                EditorconfigCheckTask.NAME //
-                , "--debug" //
-        // , "--stacktrace" //
-        ) //
-                // .withDebug(true)
-                .withPluginClasspath() //
-                .buildAndFail();
+        try {
+            BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
+                    EditorconfigCheckTask.NAME //
+                    , "--debug" //
+            // , "--stacktrace" //
+            ) //
+                    // .withDebug(true)
+                    .withPluginClasspath() //
+                    .buildAndFail();
 
-        final String logText = result.getOutput();
-        Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
+            final String logText = result.getOutput();
+            Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-        Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
+            Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
 
 
-        assertNoLogText(projectName, logText,
-                "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
-        assertNoLogText(projectName, logText,
-                "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertLogText(projectName, logText,
-                "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertNoLogText(projectName, logText,
-                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
-                        .replace('/', File.separatorChar));
-        assertNoLogText(projectName, logText,
-                "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText, "Checked 2 files");
-        assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
-        assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
-        assertLogText(projectName, logText, "./gradlew editorconfigFormat");
-        assertLogText(projectName, logText, "to fix them automagically.");
+            assertNoLogText(projectName, logText,
+                    "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
+            assertNoLogText(projectName, logText,
+                    "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertLogText(projectName, logText,
+                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertNoLogText(projectName, logText,
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
+                            .replace('/', File.separatorChar));
+            assertNoLogText(projectName, logText,
+                    "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
+            assertLogText(projectName, logText, "Checked 2 files");
+            assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
+            assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
+            assertLogText(projectName, logText, "./gradlew editorconfigFormat");
+            assertLogText(projectName, logText, "to fix them automagically.");
+        } catch (UnexpectedBuildSuccess e) {
+            final BuildResult result = e.getBuildResult();
+            final String logText = result.getOutput();
+            Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
+            throw e;
+        }
+
 
     }
 

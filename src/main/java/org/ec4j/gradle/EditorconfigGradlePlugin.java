@@ -18,6 +18,7 @@ package org.ec4j.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 
 /**
  * Adds {@link EditorconfigExtension}, {@link EditorconfigCheckTask} and {@link EditorconfigFormatTask}.
@@ -25,11 +26,19 @@ import org.gradle.api.Project;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class EditorconfigGradlePlugin implements Plugin<Project> {
+    public final static String CONFIGURATTION_NAME = "editorconfig";
+    /** The version of {@code org.ec4j.maven:ec4j-linters} keep in sync with the version in {@code build.gradle} */
+    private static final String LINTERS_VERSION = "0.0.7";
 
     /** {@inheritDoc} */
     @Override
     public void apply(Project project) {
         project.getExtensions().create(EditorconfigExtension.NAME, EditorconfigExtension.class);
+        project.getRepositories().add(project.getRepositories().mavenCentral());
+        project.getConfigurations().maybeCreate(CONFIGURATTION_NAME);
+        final DependencyHandler dependencies = project.getDependencies();
+        dependencies.add(CONFIGURATTION_NAME, "org.ec4j.maven:ec4j-linters:" + LINTERS_VERSION);
+
         project.getTasks().create(EditorconfigCheckTask.NAME, EditorconfigCheckTask.class);
         project.getTasks().create(EditorconfigFormatTask.NAME, EditorconfigFormatTask.class);
     }

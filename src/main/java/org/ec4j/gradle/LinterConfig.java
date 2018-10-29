@@ -16,15 +16,20 @@
  */
 package org.ec4j.gradle;
 
+import java.io.Serializable;
+
 import org.ec4j.maven.lint.api.Linter;
-import org.ec4j.maven.linters.TextLinter;
 
 /**
  * A configuration of a {@link Linter}.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class LinterConfig {
+public class LinterConfig implements Serializable {
+
+    private static final long serialVersionUID = 3565859468589596550L;
+
+    private static final String LINTERS_PACKAGE = "org.ec4j.maven.linters";
 
     private String className;
     private boolean enabled = true;
@@ -34,7 +39,7 @@ public class LinterConfig {
     private boolean useDefaultIncludesAndExcludes = true;
 
     public String getClassName() {
-        return className.indexOf('.') < 0 ? TextLinter.class.getPackage().getName() + "." + className + "Linter"
+        return className.indexOf('.') < 0 ? LINTERS_PACKAGE + "." + className + "Linter"
                 : className;
     }
 
