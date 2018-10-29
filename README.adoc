@@ -132,6 +132,24 @@ On Windows:
 ----
 
 
+== How to release
+
+[source,shell]
+----
+# Make sure you are no master
+git status
+
+relVersion=...
+sed -i "s/version = '[^']'/version = '${relVersion}'/" build.gradle
+git add -A
+git commit -m "Release ${relVersion}"
+git tag ${relVersion}
+./gradlew publishPlugins --no-daemon --stacktrace
+git push upstream master
+git push upstream ${relVersion}
+----
+
+
 == Misc.
 
 * All code and contributions are under link:/LICENSE[Apache License]
