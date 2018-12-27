@@ -17,7 +17,7 @@ https://github.com/ec4j/editorconfig-gradle-plugin/issues[report] them!
 
 == Basic usage
 
-`editorconfig-gradle-plugin` requires Java 7+ and Gradle 3.5+.
+`editorconfig-gradle-plugin` requires Java 7+ and Gradle 4.1+.
 
 To apply the plugin, add the following to your project:
 
