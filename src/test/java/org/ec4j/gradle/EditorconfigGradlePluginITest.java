@@ -16,17 +16,8 @@
  */
 package org.ec4j.gradle;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
-import org.gradle.testkit.runner.InvalidPluginMetadataException;
-import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildSuccess;
 import org.junit.Assert;
@@ -34,6 +25,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static java.util.Objects.requireNonNull;
 
 public class EditorconfigGradlePluginITest {
 
@@ -74,7 +74,7 @@ public class EditorconfigGradlePluginITest {
     }
 
     @Test
-    public void checkDefaults() throws IOException, InterruptedException {
+    public void checkDefaults() throws IOException {
         final String projectName = "defaults";
         Path testProjectPath = init(projectName, "checkDefaults");
 
@@ -91,7 +91,7 @@ public class EditorconfigGradlePluginITest {
             final String logText = result.getOutput();
             Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-            Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
+            Assert.assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
 
             assertLogText(projectName, logText,
                     "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
@@ -127,7 +127,7 @@ public class EditorconfigGradlePluginITest {
                     "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
             assertLogText(projectName, logText,
                     "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
-            assertLogText(projectName, logText, "Checked 6 files");
+            assertLogText(projectName, logText, "Checked 7 files");
             assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
             assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
             assertLogText(projectName, logText, "./gradlew editorconfigFormat");
@@ -142,7 +142,7 @@ public class EditorconfigGradlePluginITest {
     }
 
     @Test
-    public void checkExtension() throws IOException, InterruptedException {
+    public void checkExtension() throws IOException {
         final String projectName = "extension";
         final Path testProjectPath = init(projectName, "checkExtension");
 
@@ -159,7 +159,7 @@ public class EditorconfigGradlePluginITest {
             final String logText = result.getOutput();
             Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-            Assert.assertEquals(result.task(":" + EditorconfigCheckTask.NAME).getOutcome(), TaskOutcome.FAILED);
+            Assert.assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
 
 
             assertNoLogText(projectName, logText,
@@ -199,7 +199,7 @@ public class EditorconfigGradlePluginITest {
     }
 
     @Test
-    public void formatDefaults() throws IOException, InterruptedException {
+    public void formatDefaults() throws IOException {
         final String projectName = "defaults";
         final Path testProjectPath = init(projectName, "formatDefaults");
 
@@ -215,7 +215,7 @@ public class EditorconfigGradlePluginITest {
         final String logText = result.getOutput();
         Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-        Assert.assertEquals(result.task(":" + EditorconfigFormatTask.NAME).getOutcome(), TaskOutcome.SUCCESS);
+        Assert.assertEquals(TaskOutcome.SUCCESS, requireNonNull(result.task(":" + EditorconfigFormatTask.NAME)).getOutcome());
 
         assertLogText(projectName, logText,
                 "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
@@ -251,8 +251,8 @@ public class EditorconfigGradlePluginITest {
                 "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
         assertLogText(projectName, logText,
                 "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
-        assertLogText(projectName, logText, "Formatted 3 out of 6 files");
-        assertLogText(projectName, logText, "Finished executing task ':" + EditorconfigFormatTask.NAME + "'");
+        assertLogText(projectName, logText, "Formatted 3 out of 7 files");
+        assertLogText(projectName, logText, ":" + EditorconfigFormatTask.NAME + " finished executing");
 
         final Path expectedBaseDir = srcProjectsPath.resolve(projectName + "-formatted");
         assertFilesEqual(testProjectPath, expectedBaseDir, ".editorconfig");
