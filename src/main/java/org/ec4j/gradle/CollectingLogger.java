@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ec4j.gradle.runtime.EditorconfigInvoker;
-import org.ec4j.maven.lint.api.Logger;
+import org.ec4j.lint.api.Logger;
 
 /**
  * A {@link Logger} that collects the log messages in a {@link #messages} {@link List}. This class exists because the

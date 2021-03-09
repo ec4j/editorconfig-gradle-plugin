@@ -16,7 +16,7 @@
  */
 package org.ec4j.gradle;
 
-import org.ec4j.maven.lint.api.Logger.LogLevel;
+import org.ec4j.lint.api.Logger.LogLevel;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -34,16 +34,16 @@ import org.ec4j.gradle.CollectingLogger;
 import org.ec4j.gradle.EditorconfigCheckTask;
 import org.ec4j.gradle.EditorconfigFormatTask;
 import org.ec4j.gradle.LinterConfig;
-import org.ec4j.maven.lint.api.EditableResource;
-import org.ec4j.maven.lint.api.FormatException;
-import org.ec4j.maven.lint.api.FormattingHandler;
-import org.ec4j.maven.lint.api.Linter;
-import org.ec4j.maven.lint.api.LinterRegistry;
-import org.ec4j.maven.lint.api.Logger;
-import org.ec4j.maven.lint.api.Logger.LogLevel;
-import org.ec4j.maven.lint.api.Resource;
-import org.ec4j.maven.lint.api.ViolationCollector;
-import org.ec4j.maven.lint.api.ViolationHandler;
+import org.ec4j.lint.api.EditableResource;
+import org.ec4j.lint.api.FormatException;
+import org.ec4j.lint.api.FormattingHandler;
+import org.ec4j.lint.api.Linter;
+import org.ec4j.lint.api.LinterRegistry;
+import org.ec4j.lint.api.Logger;
+import org.ec4j.lint.api.Logger.LogLevel;
+import org.ec4j.lint.api.Resource;
+import org.ec4j.lint.api.ViolationCollector;
+import org.ec4j.lint.api.ViolationHandler;
 import org.gradle.api.GradleException;
 
 /**

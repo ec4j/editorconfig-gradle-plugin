@@ -38,7 +38,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ec4j.maven:ec4j-lint-api:0.0.7'
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.8'
     // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
 
     testCompile "org.junit.jupiter:junit-jupiter:5.4.2"

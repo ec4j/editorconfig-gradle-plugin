@@ -94,39 +94,39 @@ class EditorconfigGradlePluginITest {
             assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
 
             assertLogText(projectName, logText,
-                    "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file '.editorconfig' using linter org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText, "No formatting violations found in file '.editorconfig'");
             assertLogText(projectName, logText,
-                    "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file 'build.gradle' using linter org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText, "No formatting violations found in file 'build.gradle'");
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
                     "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
+                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.XmlLinter"
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.linters.XmlLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                    "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.linters.XmlLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                    "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.linters.XmlLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file 'README.adoc' using linter org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText,
-                    "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
+                    "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText, "Checked 7 files");
             assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
             assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
@@ -163,26 +163,26 @@ class EditorconfigGradlePluginITest {
 
 
             assertNoLogText(projectName, logText,
-                    "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file '.editorconfig' using linter org.ec4j.linters.TextLinter");
             assertNoLogText(projectName, logText,
-                    "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file 'build.gradle' using linter org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
                     "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertLogText(projectName, logText,
-                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
+                    "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertNoLogText(projectName, logText,
-                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
+                    "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.linters.TextLinter"
                             .replace('/', File.separatorChar));
             assertNoLogText(projectName, logText,
-                    "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
+                    "Processing file 'README.adoc' using linter org.ec4j.linters.TextLinter");
             assertLogText(projectName, logText, "Checked 2 files");
             assertLogText(projectName, logText, ":" + EditorconfigCheckTask.NAME + " FAILED");
             assertLogText(projectName, logText, "There are .editorconfig violations. You may want to run");
@@ -218,39 +218,39 @@ class EditorconfigGradlePluginITest {
         assertEquals(TaskOutcome.SUCCESS, requireNonNull(result.task(":" + EditorconfigFormatTask.NAME)).getOutcome());
 
         assertLogText(projectName, logText,
-                "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
+                "Processing file '.editorconfig' using linter org.ec4j.linters.TextLinter");
         assertLogText(projectName, logText, "No formatting violations found in file '.editorconfig'");
         assertLogText(projectName, logText,
-                "Processing file 'build.gradle' using linter org.ec4j.maven.linters.TextLinter");
+                "Processing file 'build.gradle' using linter org.ec4j.linters.TextLinter");
         assertLogText(projectName, logText, "No formatting violations found in file 'build.gradle'");
         assertLogText(projectName, logText,
-                "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.maven.linters.TextLinter"
+                "Processing file 'src/main/java/org/ec4j/maven/it/defaults/App.java' using linter org.ec4j.linters.TextLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
                 "No formatting violations found in file 'src/main/java/org/ec4j/maven/it/defaults/App.java'"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.maven.linters.TextLinter"
+                "Processing file 'src/main/resources/trailing-whitespace.txt' using linter org.ec4j.linters.TextLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter"
+                "src/main/resources/trailing-whitespace.txt@1,7: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.linters.TextLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.TextLinter"
+                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.linters.TextLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.maven.linters.XmlLinter"
+                "Processing file 'src/main/resources/indent.xml' using linter org.ec4j.linters.XmlLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                "src/main/resources/indent.xml@23,5: Delete 1 character - violates indent_style = space, indent_size = 2, reported by org.ec4j.linters.XmlLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.maven.linters.XmlLinter"
+                "src/main/resources/indent.xml@24,3: Delete 2 characters - violates indent_style = space, indent_size = 2, reported by org.ec4j.linters.XmlLinter"
                         .replace('/', File.separatorChar));
         assertLogText(projectName, logText,
-                "Processing file 'README.adoc' using linter org.ec4j.maven.linters.TextLinter");
+                "Processing file 'README.adoc' using linter org.ec4j.linters.TextLinter");
         assertLogText(projectName, logText,
-                "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.maven.linters.TextLinter");
+                "README.adoc@2,1: Delete 2 characters - violates trim_trailing_whitespace = true, reported by org.ec4j.linters.TextLinter");
         assertLogText(projectName, logText, "Formatted 3 out of 7 files");
         assertLogText(projectName, logText, ":" + EditorconfigFormatTask.NAME + " finished executing");
 
