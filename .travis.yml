@@ -22,7 +22,7 @@ language: java
 sudo: false
 
 jdk:
-- oraclejdk8
+- oraclejdk11
 
 # skip the built-in ./gradlew assemle in install phase
 install: true
