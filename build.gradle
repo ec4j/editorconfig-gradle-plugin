@@ -38,21 +38,22 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'org.ec4j.maven:ec4j-lint-api:0.0.7' // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
+    compile 'org.ec4j.maven:ec4j-lint-api:0.0.7'
+    // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
 
-    testCompile 'junit:junit:4.12'
+    testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
     testCompile gradleTestKit()
     testCompile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'org.slf4j:slf4j-simple:1.7.25'
 }
 
 gradlePlugin {
-  plugins {
-    simplePlugin {
-      id = 'org.ec4j.editorconfig'
-      implementationClass = 'org.ec4j.gradle.EditorconfigGradlePlugin'
+    plugins {
+        simplePlugin {
+            id = 'org.ec4j.editorconfig'
+            implementationClass = 'org.ec4j.gradle.EditorconfigGradlePlugin'
+        }
     }
-  }
 }
 
 pluginBundle {
@@ -74,6 +75,7 @@ test {
     testLogging {
         exceptionFormat = 'full'
     }
+    useJUnitPlatform()
 }
 
 task javadocJar(type: Jar) {
@@ -96,17 +98,17 @@ license {
     ignoreFailures = false
     strictCheck true
     ext.year = '2018'
-    excludes ([
-        "**/*.adoc",
-        "**/.classpath",
-        "**/.gitkeep",
-        "**/.project",
-        ".mvn/wrapper/",
-        "LICENSE",
-        "gradlew",
-        "gradlew.bat",
-        "license-header-template.txt",
-        "src/test/projects/**/*.txt"
+    excludes([
+            "**/*.adoc",
+            "**/.classpath",
+            "**/.gitkeep",
+            "**/.project",
+            ".mvn/wrapper/",
+            "LICENSE",
+            "gradlew",
+            "gradlew.bat",
+            "license-header-template.txt",
+            "src/test/projects/**/*.txt"
     ])
     mapping {
         editorconfig = 'SCRIPT_STYLE'
@@ -138,7 +140,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: hasProperty('ossrhUsername') ? ossrhUsername: '', password: hasProperty('ossrhPassword') ? ossrhPassword: '')
+                authentication(userName: hasProperty('ossrhUsername') ? ossrhUsername : '', password: hasProperty('ossrhPassword') ? ossrhPassword : '')
             }
 
             pom.project {

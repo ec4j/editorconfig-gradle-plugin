@@ -20,9 +20,8 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildSuccess;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +33,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class EditorconfigGradlePluginITest {
+class EditorconfigGradlePluginITest {
 
     private static final Path buildProjectsPath;
     private static final Logger log = LoggerFactory.getLogger(EditorconfigGradlePluginITest.class);
     private static final Path projectDir = Paths.get(System.getProperty("project.dir", "."));
     private static final Path srcProjectsPath;
+
     static {
         srcProjectsPath = projectDir.resolve("src/test/projects");
         buildProjectsPath = projectDir.resolve("build/test-projects");
@@ -48,33 +50,31 @@ public class EditorconfigGradlePluginITest {
 
     private static void assertLogText(String projectName, String logText, String needle) {
         if (!logText.contains(needle)) {
-            Assert.fail("Log text of '" + projectName + "' should contain '" + needle + "'\n\n" + logText);
+            fail("Log text of '" + projectName + "' should contain '" + needle + "'\n\n" + logText);
         }
     }
 
     private static void assertNoLogText(String projectName, String logText, String needle) {
         if (logText.contains(needle)) {
-            Assert.fail("Log text of '" + projectName + "' should not contain '" + needle + "'\n\n" + logText);
+            fail("Log text of '" + projectName + "' should not contain '" + needle + "'\n\n" + logText);
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws IOException {
         IoTestUtils.deleteDirectory(buildProjectsPath);
     }
-
-    //private Path testProjectPath;
 
     private static void assertFilesEqual(Path actualBaseDir, Path expectedBaseDir, String relPath) throws IOException {
         final String contentActual = new String(Files.readAllBytes(actualBaseDir.resolve(relPath)),
                 StandardCharsets.UTF_8);
         final String contentExpected = new String(Files.readAllBytes(expectedBaseDir.resolve(relPath)),
                 StandardCharsets.UTF_8);
-        Assert.assertEquals(relPath, contentExpected, contentActual);
+        assertEquals(contentExpected, contentActual, relPath);
     }
 
     @Test
-    public void checkDefaults() throws IOException {
+    void checkDefaults() throws IOException {
         final String projectName = "defaults";
         Path testProjectPath = init(projectName, "checkDefaults");
 
@@ -91,7 +91,7 @@ public class EditorconfigGradlePluginITest {
             final String logText = result.getOutput();
             Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-            Assert.assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
+            assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
 
             assertLogText(projectName, logText,
                     "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");
@@ -142,7 +142,7 @@ public class EditorconfigGradlePluginITest {
     }
 
     @Test
-    public void checkExtension() throws IOException {
+    void checkExtension() throws IOException {
         final String projectName = "extension";
         final Path testProjectPath = init(projectName, "checkExtension");
 
@@ -150,7 +150,7 @@ public class EditorconfigGradlePluginITest {
             BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
                     EditorconfigCheckTask.NAME //
                     , "--debug" //
-            // , "--stacktrace" //
+                    // , "--stacktrace" //
             ) //
                     // .withDebug(true)
                     .withPluginClasspath() //
@@ -159,7 +159,7 @@ public class EditorconfigGradlePluginITest {
             final String logText = result.getOutput();
             Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-            Assert.assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
+            assertEquals(TaskOutcome.FAILED, requireNonNull(result.task(":" + EditorconfigCheckTask.NAME)).getOutcome());
 
 
             assertNoLogText(projectName, logText,
@@ -199,14 +199,14 @@ public class EditorconfigGradlePluginITest {
     }
 
     @Test
-    public void formatDefaults() throws IOException {
+    void formatDefaults() throws IOException {
         final String projectName = "defaults";
         final Path testProjectPath = init(projectName, "formatDefaults");
 
         BuildResult result = GradleRunner.create().withProjectDir(testProjectPath.toFile()).withArguments( //
                 EditorconfigFormatTask.NAME //
                 , "--debug" //
-        // , "--stacktrace" //
+                // , "--stacktrace" //
         ) //
                 // .withDebug(true)
                 .withPluginClasspath() //
@@ -215,7 +215,7 @@ public class EditorconfigGradlePluginITest {
         final String logText = result.getOutput();
         Files.write(testProjectPath.resolve("log.txt"), logText.getBytes(StandardCharsets.UTF_8));
 
-        Assert.assertEquals(TaskOutcome.SUCCESS, requireNonNull(result.task(":" + EditorconfigFormatTask.NAME)).getOutcome());
+        assertEquals(TaskOutcome.SUCCESS, requireNonNull(result.task(":" + EditorconfigFormatTask.NAME)).getOutcome());
 
         assertLogText(projectName, logText,
                 "Processing file '.editorconfig' using linter org.ec4j.maven.linters.TextLinter");

@@ -16,19 +16,21 @@
  */
 package org.ec4j.gradle;
 
+import org.ec4j.maven.lint.api.Logger.LogLevel;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.ec4j.maven.lint.api.Logger.LogLevel;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class CollectingLoggerTest {
+class CollectingLoggerTest {
 
     @Test
-    public void serialize() throws IOException {
+    void serialize() throws IOException {
         final CollectingLogger log = new CollectingLogger(LogLevel.TRACE);
 
         log.trace("trace trace\nstr{}", 1);
@@ -44,7 +46,7 @@ public class CollectingLoggerTest {
         log.serialize(out);
 
         final String serialized = out.toString();
-        Assert.assertEquals(prefix //
+        assertEquals(prefix //
                 + "TRACE trace trace\\nstr1\n" //
                 + "DEBUG debug debug\\rstr2\n" //
                 + "INFO info info\\r\\nstr3\n" //
@@ -56,25 +58,25 @@ public class CollectingLoggerTest {
         final CollectingLogger.LogMessages data = CollectingLogger.deserialize(prefix.length(), serialized);
         final List<Entry<String, String>> messages = data.getMessages();
         int i = 0;
-        Assert.assertEquals(5, messages.size());
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("TRACE", "trace trace\nstr1"),
+        assertEquals(5, messages.size());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("TRACE", "trace trace\nstr1"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("DEBUG", "debug debug\rstr2"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("DEBUG", "debug debug\rstr2"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("INFO", "info info\r\nstr3"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("INFO", "info info\r\nstr3"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("WARN", "warn warn str4"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("WARN", "warn warn str4"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("ERROR", "error error\tstr5"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("ERROR", "error error\tstr5"),
                 messages.get(i++));
 
         final String failureMessage = data.getFailureMessage();
-        Assert.assertEquals("fail\nfail\n", failureMessage);
+        assertEquals("fail\nfail\n", failureMessage);
 
     }
 
     @Test
-    public void serializeNoFailure() throws IOException {
+    void serializeNoFailure() throws IOException {
         final CollectingLogger log = new CollectingLogger(LogLevel.TRACE);
 
         log.trace("trace trace\nstr{}", 1);
@@ -89,7 +91,7 @@ public class CollectingLoggerTest {
         log.serialize(out);
 
         final String serialized = out.toString();
-        Assert.assertEquals(prefix //
+        assertEquals(prefix //
                 + "TRACE trace trace\\nstr1\n" //
                 + "DEBUG debug debug\\rstr2\n" //
                 + "INFO info info\\r\\nstr3\n" //
@@ -100,20 +102,20 @@ public class CollectingLoggerTest {
         final CollectingLogger.LogMessages data = CollectingLogger.deserialize(prefix.length(), serialized);
         final List<Entry<String, String>> messages = data.getMessages();
         int i = 0;
-        Assert.assertEquals(5, messages.size());
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("TRACE", "trace trace\nstr1"),
+        assertEquals(5, messages.size());
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("TRACE", "trace trace\nstr1"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("DEBUG", "debug debug\rstr2"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("DEBUG", "debug debug\rstr2"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("INFO", "info info\r\nstr3"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("INFO", "info info\r\nstr3"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("WARN", "warn warn str4"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("WARN", "warn warn str4"),
                 messages.get(i++));
-        Assert.assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("ERROR", "error error\tstr5"),
+        assertEquals(new AbstractMap.SimpleImmutableEntry<String, String>("ERROR", "error error\tstr5"),
                 messages.get(i++));
 
         final String failureMessage = data.getFailureMessage();
-        Assert.assertNull(failureMessage);
+        assertNull(failureMessage);
 
     }
 }
