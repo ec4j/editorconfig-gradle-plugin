@@ -17,15 +17,16 @@
 
 plugins {
     id 'com.github.hierynomus.license' version '0.15.0'
-    id 'com.gradle.plugin-publish' version '0.9.9'
+    id 'com.gradle.plugin-publish' version '0.13.0'
     id 'java'
     id 'java-gradle-plugin'
     id 'maven'
+    id 'maven-publish'
     id 'signing'
 }
 
 group = 'org.ec4j.gradle'
-version = '0.0.4'
+version = '0.0.4-SNAPSHOT'
 ext.isReleaseVersion = !version.endsWith("-SNAPSHOT")
 
 sourceCompatibility = 1.7
@@ -49,8 +50,9 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        simplePlugin {
+        editorconfigPlugin {
             id = 'org.ec4j.editorconfig'
+            displayName = 'EditorConfig Gradle Plugin'
             implementationClass = 'org.ec4j.gradle.EditorconfigGradlePlugin'
         }
     }
@@ -61,13 +63,6 @@ pluginBundle {
     vcsUrl = 'https://github.com/ec4j/editorconfig-gradle-plugin.git'
     description = 'A Gradle plugin for checking whether project files comply with format rules defined in .editorconfig files and eventually also for fixing the violations'
     tags = ['editorconfig', 'lint', 'gradle', 'plugin']
-
-    plugins {
-        editorconfigPlugin {
-            id = 'org.ec4j.editorconfig'
-            displayName = 'EditorConfig Gradle Plugin'
-        }
-    }
 }
 
 test {
