@@ -41,10 +41,10 @@ dependencies {
     compile 'org.ec4j.maven:ec4j-lint-api:0.0.8'
     // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
 
-    testCompile "org.junit.jupiter:junit-jupiter:5.4.2"
+    testCompile 'org.junit.jupiter:junit-jupiter:5.4.2'
     testCompile gradleTestKit()
-    testCompile 'org.slf4j:slf4j-api:1.7.25'
-    testCompile 'org.slf4j:slf4j-simple:1.7.25'
+    testCompile 'org.slf4j:slf4j-api:1.7.30'
+    testCompile 'org.slf4j:slf4j-simple:1.7.30'
 }
 
 gradlePlugin {
