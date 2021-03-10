@@ -109,7 +109,7 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
 
         final Set<String> includedPaths = scanIncludedFiles(project, editorconfigExtension);
 
-        final Configuration classpath = project.getConfigurations().getAt(EditorconfigGradlePlugin.CONFIGURATTION_NAME);
+        final Configuration classpath = project.getConfigurations().getAt(EditorconfigGradlePlugin.CONFIGURATION_NAME);
 
         workerExecutor.submit(EditorconfigInvoker.class, new Action<WorkerConfiguration>() {
             @Override
