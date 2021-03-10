@@ -16,11 +16,12 @@
  */
 package org.ec4j.gradle;
 
+import org.ec4j.lint.api.Constants;
+import org.ec4j.lint.api.Linter;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ec4j.maven.lint.api.Constants;
-import org.ec4j.maven.lint.api.Linter;
 
 /**
  * An {@code editorconfig}

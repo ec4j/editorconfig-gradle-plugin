@@ -16,9 +16,10 @@
  */
 package org.ec4j.gradle;
 
+import org.ec4j.lint.api.Linter;
+
 import java.io.Serializable;
 
-import org.ec4j.maven.lint.api.Linter;
 
 /**
  * A configuration of a {@link Linter}.
@@ -29,7 +30,7 @@ public class LinterConfig implements Serializable {
 
     private static final long serialVersionUID = 3565859468589596550L;
 
-    private static final String LINTERS_PACKAGE = "org.ec4j.maven.linters";
+    private static final String LINTERS_PACKAGE = "org.ec4j.linters";
 
     private String className;
     private boolean enabled = true;

@@ -28,7 +28,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 public class EditorconfigGradlePlugin implements Plugin<Project> {
     public final static String CONFIGURATTION_NAME = "editorconfig";
     /** The version of {@code org.ec4j.maven:ec4j-linters} keep in sync with the version in {@code build.gradle} */
-    private static final String LINTERS_VERSION = "0.0.7";
+    private static final String LINTERS_VERSION = "0.0.8";
 
     /** {@inheritDoc} */
     @Override

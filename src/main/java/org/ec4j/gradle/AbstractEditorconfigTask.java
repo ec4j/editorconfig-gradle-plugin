@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.ec4j.gradle.CollectingLogger.LogMessages;
 import org.ec4j.gradle.runtime.EditorconfigInvoker;
-import org.ec4j.maven.lint.api.Constants;
+import org.ec4j.lint.api.Constants;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -149,7 +149,7 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
                         for (Entry<String, String> logMessage : logData.getMessages()) {
                             final String key = logMessage.getKey();
                             /* There is no TRACE in org.gradle.api.logging.LogLevel */
-                            final LogLevel logLevel = org.ec4j.maven.lint.api.Logger.LogLevel.TRACE.name().equals(key)
+                            final LogLevel logLevel = org.ec4j.lint.api.Logger.LogLevel.TRACE.name().equals(key)
                                     ? LogLevel.DEBUG
                                     : LogLevel.valueOf(key);
                             log.log(logLevel, logMessage.getValue());
