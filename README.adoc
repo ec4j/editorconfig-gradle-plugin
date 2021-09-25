@@ -17,7 +17,7 @@ https://github.com/ec4j/editorconfig-gradle-plugin/issues[report] them!
 
 == Basic usage
 
-`editorconfig-gradle-plugin` requires Java 7+ and Gradle 4.1+.
+`editorconfig-gradle-plugin` requires Java 8+ and Gradle 4.1+.
 
 To apply the plugin, add the following to your project:
 
@@ -115,7 +115,7 @@ duplicate work.
 
 Prerequisites:
 
-* Java 7+
+* Java 8+
 
 The most common build with unit tests:
 
@@ -140,7 +140,7 @@ On Windows:
 git status
 
 relVersion=...
-sed -i "s/version = '[^']'/version = '${relVersion}'/" build.gradle
+sed -i "s/version = '[^']'/version = '${relVersion}'/" build.gradle.kts
 git add -A
 git commit -m "Release ${relVersion}"
 git tag ${relVersion}
