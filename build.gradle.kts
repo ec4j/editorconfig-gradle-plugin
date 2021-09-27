@@ -101,6 +101,46 @@ configure<LicenseExtension> {
     newLine.set(false)
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+
+            pom {
+
+                name.set(project.name + " " + project.version)
+                description.set(project.description)
+                url.set("https://github.com/ec4j/editorconfig-gradle-plugin")
+
+                licenses {
+                    license {
+                        name.set("Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("ppalaga")
+                    }
+                }
+
+                scm {
+                    url.set("https://github.com/ec4j/editorconfig-gradle-plugin")
+                    connection.set("scm:https://ec4j@github.com/ec4j/editorconfig-gradle-plugin.git")
+                    developerConnection.set("scm:git://github.com/ec4j/editorconfig-gradle-plugin.git")
+                }
+
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("https://github.com/ec4j/editorconfig-gradle-plugin")
+                }
+            }
+        }
+    }
+}
+
 nexusPublishing {
     repositories {
         sonatype()
