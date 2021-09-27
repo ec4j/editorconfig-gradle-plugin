@@ -4,9 +4,8 @@ endif::[]
 
 = `editorconfig-gradle-plugin`
 
-https://github.com/ec4j/editorconfig-gradle-plugin/blob/master/LICENSE[image:https://img.shields.io/github/license/ec4j/editorconfig-gradle-plugin.svg[License]]
-http://travis-ci.org/ec4j/editorconfig-gradle-plugin[image:https://img.shields.io/travis/ec4j/editorconfig-gradle-plugin/master.svg?logo=travis&color=white&label=Travis+CI[Travis CI build status]]
-https://ci.appveyor.com/project/ppalaga/editorconfig-gradle-plugin[image:https://img.shields.io/appveyor/ci/ppalaga/editorconfig-gradle-plugin/master.svg?logo=appveyor&color=white&label=AppVeyor+Windows+CI[AppVeyor Windows CI build status]]
+image:https://img.shields.io/badge/license-Apache--2.0-blue[https://github.com/ec4j/editorconfig-gradle-plugin/blob/master/LICENSE]
+image:https://img.shields.io/github/checks-status/ec4j/editorconfig-gradle-plugin/master?label=build[https://github.com/ec4j/editorconfig-gradle-plugin/actions]
 
 `editorconfig-gradle-plugin` is a Gradle plugin for checking whether project files comply with format rules
 defined in `http://editorconfig.org/[.editorconfig]` files and eventually also for fixing the violations.
