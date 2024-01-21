@@ -27,8 +27,8 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
  */
 public class EditorconfigGradlePlugin implements Plugin<Project> {
     public static final String CONFIGURATION_NAME = "editorconfig";
-    /** The version of {@code org.ec4j.maven:ec4j-linters} keep in sync with the version in {@code build.gradle} */
-    private static final String LINTERS_VERSION = "0.0.8";
+    /** The version of {@code org.ec4j.linters:editorconfig-linters} keep in sync with the version in {@code build.gradle} */
+    private static final String LINTERS_VERSION = "0.2.1";
 
     /** {@inheritDoc} */
     @Override
@@ -37,7 +37,7 @@ public class EditorconfigGradlePlugin implements Plugin<Project> {
         project.getRepositories().add(project.getRepositories().mavenCentral());
         project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
         final DependencyHandler dependencies = project.getDependencies();
-        dependencies.add(CONFIGURATION_NAME, "org.ec4j.maven:ec4j-linters:" + LINTERS_VERSION);
+        dependencies.add(CONFIGURATION_NAME, "org.ec4j.linters:editorconfig-linters:" + LINTERS_VERSION);
 
         project.getTasks().create(EditorconfigCheckTask.NAME, EditorconfigCheckTask.class);
         project.getTasks().create(EditorconfigFormatTask.NAME, EditorconfigFormatTask.class);

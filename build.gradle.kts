@@ -54,15 +54,14 @@ repositories {
 dependencies {
     compileOnly(gradleApi())
     compileOnly(localGroovy())
-    compileOnly("org.ec4j.maven:ec4j-lint-api:0.0.8")
+    implementation("org.ec4j.linters:editorconfig-lint-api:0.2.1")
     // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
 
-    testCompileOnly("junit:junit:4.13.2")
-    testCompileOnly("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testCompileOnly(gradleTestKit())
     testCompileOnly("org.slf4j:slf4j-api:1.7.30")
     testCompileOnly("org.slf4j:slf4j-simple:1.7.30")
-    testCompileOnly("org.ec4j.maven:ec4j-lint-api:0.0.8")
 }
 
 gradlePlugin {
