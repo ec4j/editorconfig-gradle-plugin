@@ -34,7 +34,6 @@ import org.ec4j.gradle.CollectingLogger;
 import org.ec4j.gradle.EditorconfigCheckTask;
 import org.ec4j.gradle.EditorconfigFormatTask;
 import org.ec4j.gradle.LinterConfig;
-import org.ec4j.lint.api.EditableResource;
 import org.ec4j.lint.api.FormatException;
 import org.ec4j.lint.api.FormattingHandler;
 import org.ec4j.lint.api.Linter;
@@ -108,7 +107,7 @@ public class EditorconfigInvoker implements Runnable {
             this.resourceFactory = new ResourceFactory() {
                 @Override
                 public Resource createResource(Path absFile, Path relFile, Charset encoding) {
-                    return new EditableResource(absFile, relFile, encoding);
+                    return new Resource(absFile, relFile, encoding);
                 }
             };
         } else {
