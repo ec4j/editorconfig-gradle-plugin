@@ -44,13 +44,14 @@ import org.ec4j.lint.api.Resource;
 import org.ec4j.lint.api.ViolationCollector;
 import org.ec4j.lint.api.ViolationHandler;
 import org.gradle.api.GradleException;
+import org.gradle.workers.WorkAction;
 
 /**
  * A {@link Runnable} suitable for being invoked in an isolated class loader.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class EditorconfigInvoker implements Runnable {
+public abstract class EditorconfigInvoker implements WorkAction<EditorconfigParameters> {
 
     interface ResourceFactory {
         Resource createResource(Path absFile, Path relFile, Charset encoding);
@@ -58,8 +59,10 @@ public class EditorconfigInvoker implements Runnable {
 
     public static final String FORMAT_EXCEPTION_PREFIX = FormatException.class.getName() + "\n";
 
-    private static LinterRegistry buildLinterRegistry(boolean isAddLintersFromClassPath, List<LinterConfig> linters,
-            ClassLoader cl, Logger log) {
+    private static LinterRegistry buildLinterRegistry(boolean isAddLintersFromClassPath,
+                                                      List<LinterConfig> linters,
+                                                      ClassLoader cl,
+                                                      Logger log) {
         final LinterRegistry.Builder linterRegistryBuilder = LinterRegistry.builder().log(log);
         if (isAddLintersFromClassPath) {
             linterRegistryBuilder.scan(cl);
@@ -85,45 +88,32 @@ public class EditorconfigInvoker implements Runnable {
     private final ViolationHandler handler;
     private final Set<String> includedFiles;
     private final LinterRegistry linterRegistry;
-    private final CollectingLogger log;
+    private final CollectingLogger log = new CollectingLogger(LogLevel.TRACE);
     private final ResourceFactory resourceFactory;
 
     @Inject
-    public EditorconfigInvoker(String taskClass, Set<String> includedFiles, String basedirPath, String charset,
-            boolean isFailOnFormatViolation, boolean isBackUp, String backupSuffix, boolean isAddLintersFromClassPath,
-            List<LinterConfig> linters, boolean failOnNoMatchingProperties) {
-        super();
-        this.log = new CollectingLogger(LogLevel.TRACE);
-        if (taskClass.startsWith(EditorconfigCheckTask.class.getName())) {
-            this.handler = new ViolationCollector(isFailOnFormatViolation, "./gradlew editorconfigFormat", log);
-            this.resourceFactory = new ResourceFactory() {
-                @Override
-                public Resource createResource(Path absFile, Path relFile, Charset encoding) {
-                    return new Resource(absFile, relFile, encoding);
-                }
-            };
-        } else if (taskClass.startsWith(EditorconfigFormatTask.class.getName())) {
-            this.handler = new FormattingHandler(isBackUp, backupSuffix, log);
-            this.resourceFactory = new ResourceFactory() {
-                @Override
-                public Resource createResource(Path absFile, Path relFile, Charset encoding) {
-                    return new Resource(absFile, relFile, encoding);
-                }
-            };
+    public EditorconfigInvoker(EditorconfigParameters parameters) {
+        if (parameters.getTaskClass().get().startsWith(EditorconfigCheckTask.class.getName())) {
+            this.handler = new ViolationCollector(parameters.getFailOnFormatViolation().get(), "./gradlew editorconfigFormat", log);
+            this.resourceFactory = Resource::new;
+        } else if (parameters.getTaskClass().get().startsWith(EditorconfigFormatTask.class.getName())) {
+            this.handler = new FormattingHandler(parameters.getBackUp().get(), parameters.getBackupSuffix().get(), log);
+            this.resourceFactory = Resource::new;
         } else {
             throw new IllegalStateException(String.format("Expected %s or %s; got %s",
-                    EditorconfigCheckTask.class.getName(), EditorconfigFormatTask.class.getName(), taskClass));
+                    EditorconfigCheckTask.class.getName(), EditorconfigFormatTask.class.getName(), parameters.getTaskClass()));
         }
-        this.includedFiles = includedFiles;
-        this.basedirPath = Paths.get(basedirPath);
-        this.charset = Charset.forName(charset);
+
+        this.includedFiles = parameters.getIncludedFiles().get();
+        this.basedirPath = Paths.get(parameters.getBasedirPath().get());
+        this.charset = Charset.forName(parameters.getCharset().get());
         final ClassLoader invokerCl = EditorconfigInvoker.class.getClassLoader();
-        this.linterRegistry = buildLinterRegistry(isAddLintersFromClassPath, linters, invokerCl, log);
-        this.failOnNoMatchingProperties = failOnNoMatchingProperties;
+        this.linterRegistry = buildLinterRegistry(parameters.getAddLintersFromClassPath().get(), parameters.getLinters().get(), invokerCl, log);
+        this.failOnNoMatchingProperties = parameters.getFailOnNoMatchingProperties().get();
     }
 
     @Override
-    public void run() {
+    public void execute() {
         FormatException formatException = null;
         try {
 

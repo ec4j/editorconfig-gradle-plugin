@@ -24,19 +24,16 @@ import java.util.Set;
 
 import org.ec4j.gradle.CollectingLogger.LogMessages;
 import org.ec4j.gradle.runtime.EditorconfigInvoker;
+import org.ec4j.gradle.runtime.EditorconfigParameters;
 import org.ec4j.lint.api.Constants;
-import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.workers.IsolationMode;
-import org.gradle.workers.WorkerConfiguration;
 import org.gradle.workers.WorkerExecutionException;
 import org.gradle.workers.WorkerExecutor;
 
@@ -57,17 +54,14 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
      * @return a {@link Set} of absolute paths of included files
      */
     private static Set<String> scanIncludedFiles(Project project, final EditorconfigExtension editorconfigExtension) {
-        FileTree tree = project.fileTree(project.getProjectDir(), new Action<ConfigurableFileTree>() {
-            @Override
-            public void execute(ConfigurableFileTree tree) {
-                tree.include(editorconfigExtension.getIncludes());
+        FileTree tree = project.fileTree(project.getProjectDir(), fileTree -> {
+            fileTree.include(editorconfigExtension.getIncludes());
 
-                Set<String> excls = new LinkedHashSet<>(editorconfigExtension.getExcludes());
-                if (editorconfigExtension.isExcludeNonSourceFiles()) {
-                    excls.addAll(Constants.DEFAULT_EXCLUDES);
-                }
-                tree.exclude(excls);
+            Set<String> excls = new LinkedHashSet<>(editorconfigExtension.getExcludes());
+            if (editorconfigExtension.isExcludeNonSourceFiles()) {
+                excls.addAll(Constants.DEFAULT_EXCLUDES);
             }
+            fileTree.exclude(excls);
         });
         final Set<String> result = new LinkedHashSet<>();
         for (File file : tree.getFiles()) {
@@ -111,18 +105,12 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
 
         final Configuration classpath = project.getConfigurations().getAt(EditorconfigGradlePlugin.CONFIGURATION_NAME);
 
-        workerExecutor.submit(EditorconfigInvoker.class, new Action<WorkerConfiguration>() {
-            @Override
-            public void execute(WorkerConfiguration config) {
-                config.setIsolationMode(IsolationMode.CLASSLOADER);
-                config.params(AbstractEditorconfigTask.this.getClass().getName(), includedPaths, basedirPath,
-                        charset.name(), editorconfigExtension.isFailOnFormatViolation(),
-                        editorconfigExtension.isBackup(), editorconfigExtension.getBackupSuffix(),
-                        editorconfigExtension.isAddLintersFromClassPath(), editorconfigExtension.getLinters(),
-                        editorconfigExtension.isFailOnNoMatchingProperties());
-                config.classpath(classpath);
-            }
-        });
+        workerExecutor
+                .classLoaderIsolation(spec -> spec.getClasspath().from(classpath))
+                .submit(
+                        EditorconfigInvoker.class,
+                        parameters -> configureInvokerParameters(parameters, includedPaths, basedirPath, charset)
+                );
 
         try {
             workerExecutor.await();
@@ -166,6 +154,28 @@ public abstract class AbstractEditorconfigTask extends DefaultTask {
             throw e;
         }
 
+    }
+
+    private void configureInvokerParameters(EditorconfigParameters editorconfigParameters,
+                                            Set<String> includedPaths,
+                                            String basedirPath,
+                                            Charset charset) {
+        final Class<?> taskClassName = AbstractEditorconfigTask.this.getClass();
+
+        editorconfigParameters.getTaskClass().set(taskClassName.getName());
+        editorconfigParameters.getIncludedFiles().set(includedPaths);
+        editorconfigParameters.getBasedirPath().set(basedirPath);
+        editorconfigParameters.getCharset().set(charset.name());
+
+        editorconfigParameters.getFailOnFormatViolation().set(editorconfigExtension.isFailOnFormatViolation());
+        editorconfigParameters.getBackUp().set(editorconfigExtension.isBackup());
+        editorconfigParameters.getBackupSuffix().set(editorconfigExtension.getBackupSuffix());
+        editorconfigParameters.getAddLintersFromClassPath().set(editorconfigExtension.isAddLintersFromClassPath());
+        editorconfigParameters.getLinters().set(editorconfigExtension.getLinters());
+
+        editorconfigParameters.getFailOnNoMatchingProperties().set(
+                editorconfigExtension.isFailOnNoMatchingProperties()
+        );
     }
 
 }
