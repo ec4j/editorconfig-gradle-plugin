@@ -52,10 +52,12 @@ repositories {
 }
 
 dependencies {
+    val ec4jLintersVersion = "0.2.1"
+
     compileOnly(gradleApi())
     compileOnly(localGroovy())
-    implementation("org.ec4j.linters:editorconfig-lint-api:0.2.1")
-    // Keep in sync with org.ec4j.gradle.EditorconfigGradlePlugin.LINTERS_VERSION */
+    implementation("org.ec4j.linters:editorconfig-linters:$ec4jLintersVersion")
+    implementation("org.ec4j.linters:editorconfig-lint-api:$ec4jLintersVersion")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
