@@ -24,7 +24,7 @@ plugins {
     `java-gradle-plugin`
     `maven-publish`
 
-    id("com.gradle.plugin-publish") version "0.16.0"
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("org.cadixdev.licenser") version "0.6.1"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
@@ -65,20 +65,17 @@ dependencies {
 }
 
 gradlePlugin {
+    website = "https://github.com/ec4j/editorconfig-gradle-plugin"
+    vcsUrl = "https://github.com/ec4j/editorconfig-gradle-plugin.git"
     plugins {
         create("editorconfigPlugin") {
             id = "org.ec4j.editorconfig"
             displayName = "EditorConfig Gradle Plugin"
             implementationClass = "org.ec4j.gradle.EditorconfigGradlePlugin"
+            description = project.description
+            tags = listOf("editorconfig", "lint", "gradle", "plugin")
         }
     }
-}
-
-pluginBundle {
-    website = "https://github.com/ec4j/editorconfig-gradle-plugin"
-    vcsUrl = "https://github.com/ec4j/editorconfig-gradle-plugin.git"
-    description = project.description
-    tags = listOf("editorconfig", "lint", "gradle", "plugin")
 }
 
 tasks.withType<Test> {
