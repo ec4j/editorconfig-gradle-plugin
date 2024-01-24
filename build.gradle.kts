@@ -30,7 +30,7 @@ plugins {
 }
 
 group = "org.ec4j.gradle"
-version = "0.1.0"
+version = "0.1.1-SNAPSHOT"
 description =
     "A Gradle plugin for checking whether project files comply with format rules defined in .editorconfig files and eventually also for fixing the violations"
 
