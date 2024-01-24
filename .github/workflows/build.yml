@@ -26,14 +26,8 @@ jobs:
           else
             echo "STATUS=release" >> $GITHUB_ENV
           fi
-      - name: "publish snapshot"
-        if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
-        run: ./gradlew publishToSonatype
-        env:
-          ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
-          ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
       - name: "publish release"
-        if: "${{ env.STATUS == 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}"
         run: ./gradlew publishPlugins
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
