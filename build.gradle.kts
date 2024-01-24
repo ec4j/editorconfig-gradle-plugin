@@ -75,7 +75,7 @@ gradlePlugin {
             displayName = "EditorConfig Gradle Plugin"
             implementationClass = "org.ec4j.gradle.EditorconfigGradlePlugin"
             description = project.description
-            tags = listOf("editorconfig", "lint", "gradle", "plugin")
+            tags = listOf("editorconfig", "lint")
         }
     }
 }
